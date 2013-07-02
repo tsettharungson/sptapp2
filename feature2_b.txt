@@ -1,0 +1,36 @@
+'Random text generator
+'For generating 1MB text file of random characters
+'2011-01-13
+
+Option Explicit
+
+Dim Count, strRdm, i
+Dim objFSO, objTextFile
+Dim strFile
+
+If WScript.Arguments.count < 1 Then
+	strFile = ".\Random.txt"
+Else
+	strFile = Trim(WScript.Arguments.Item(0))
+End If
+
+'Create the File System Object
+Set objFSO = CreateObject("Scripting.FileSystemObject")
+
+'ForAppending = 8 ForReading = 1, ForWriting = 2
+Const Mode = 8
+Set objTextFile = objFSO.OpenTextFile(strFile, Mode, True)
+
+Randomize Timer
+
+For Count = 1 To 104857 'Each random generates 10 characters (10 bytes). Do this 104,857 times and we get approx 1 megabytes (1,048,570 bytes).
+	strRdm =  CStr((FormatNumber(Rnd,8,-1) + ((Rnd*100) Mod 10))) 
+	For i = Len(strRdm) to 9 'Add 0 to make sure each random string is 10-character long
+		strRdm = strRdm & "0"
+	Next
+	objTextFile.Write(strRdm)
+Next
+
+objTextFile.Write("999999") 'Adding 6 bytes to reach 1 megabyte (1,048,576 bytes)
+
+objTextFile.Close
