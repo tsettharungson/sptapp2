@@ -31,6 +31,6 @@ For Count = 1 To 104857 'Each random generates 10 characters (10 bytes). Do this
 	objTextFile.Write(strRdm)
 Next
 
-objTextFile.Write("999999") 'Adding 6 bytes to reach 1 megabyte (1,048,576 bytes)
+objTextFile.Write("123456") 'Adding 6 bytes to reach 1 megabyte (1,048,576 bytes)
 
 objTextFile.Close
