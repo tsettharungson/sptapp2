@@ -1,0 +1,52 @@
+'Sendmail 1.1
+'Release date - 2010/01/11
+'https://sami.cdt.int.thomsonreuters.com/svn/samisupp_bkktools/Email_sender/sendmail.vbs
+
+Option Explicit
+
+	If WScript.Arguments.count < 7 Then
+		Call Msgbox ("ERROR. Missing argument(s)." &vbcrlf & "Sendmail.vbs <Server> <Logon> <Password> <From> <To> <Cc> <Subject> <One-line message>" &vbcrlf & vbcrlf & "Example:" & vbcrlf & "Sendmail.vbs ""10.1.1.1"" ""john.doe"" ""ih0p"" ""notifer@test.com"" ""receiver1@test.com"" ""receiver2@test.com""" &vbcrlf & """[SAMI Monitoring] - Slowdown from Bangkok"" ""A slowdown has been detected from the Bangkok site.""", vbokonly, "Sendmail.vbs")
+		Wscript.quit
+
+	Else	
+		Dim Message
+		Dim Configuration
+		Dim Fields
+		Dim server
+		Dim logon
+		Dim password
+
+		Set Message = CreateObject("CDO.Message")
+		Set Configuration = CreateObject("CDO.Configuration")
+		server = WScript.Arguments.Item(0) '150.151.192.5
+		logon = WScript.Arguments.Item(1) 'mattrio@effix.fr
+		password = WScript.Arguments.Item(2) 'motdepasse
+
+		Configuration.Load -1    ' CDO Source Defaults
+		Set Fields = Configuration.Fields
+		With Fields
+			.Item("http://schemas.microsoft.com/cdo/configuration/sendusing") = 2
+			.Item("http://schemas.microsoft.com/cdo/configuration/smtpusessl") = 0
+			.Item("http://schemas.microsoft.com/cdo/configuration/smtpauthenticate") = 1
+			.Item("http://schemas.microsoft.com/cdo/configuration/smtpserverport") = 25
+			.Item("http://schemas.microsoft.com/cdo/configuration/smtpserver") = server
+			.Item("http://schemas.microsoft.com/cdo/configuration/sendusername") = logon
+			.Item("http://schemas.microsoft.com/cdo/configuration/sendpassword") = password
+			.Update
+		End With
+
+		With Message
+		Set .Configuration = Configuration
+			.From =  WScript.Arguments.Item(3)
+			.To =  WScript.Arguments.Item(4)
+			.Cc = WScript.Arguments.Item(5)
+			.Bcc = ""
+	'		.AddAttachment "c:\delay.txt"
+			.Subject = WScript.Arguments.Item(6)
+			.TextBody = WScript.Arguments.Item(7)
+			.Send
+		End With
+
+		Call MsgBox("An email has been sent to: " & vbcrlf & WScript.Arguments.Item(4) & vbcrlf & vbcrlf & "and copy:" & vbcrlf & WScript.Arguments.Item(5))
+
+	End If
